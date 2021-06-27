@@ -19,5 +19,6 @@ firebase.initializeApp(firebaseConfig);
 export const db = firebase.firestore();
 
 new Vue({
+  store,
   render: h => h(App),
 }).$mount('#app')

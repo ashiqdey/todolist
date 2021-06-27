@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { db } from './main';
+import { db } from '@/main';
 
 Vue.use(Vuex)
 
@@ -12,15 +12,16 @@ export default new Vuex.Store({
 
     getters : {
         getItems: (state) => {
+            console.log(`item length `+state.items.length);
             return state.items
         }
     },
 
     mutations : {
         setItems: (state) => {
-            db.collection('items').orderBy.onSnapshot((snapshot)=>{
-                items = [];
-
+            
+            db.collection('items').orderBy('createdAt').onSnapshot((snapshot)=>{
+                let items = [];
                 snapshot.forEach(doc => {
                     items.push({
                         id : doc.id,

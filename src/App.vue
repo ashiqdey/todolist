@@ -1,22 +1,24 @@
 <template>
-  <div class="home">
-    <img src="@/assets/logo.png" alt="" class="vue-logo" width="50px">
+  <div id='app' class="home">
+    <div class="block">
+      <img src="@/assets/logo.png" alt="" class="vue-logo" width="30px">
 
-    <div class="title">What do I need to do today?</div>
+      <div class="title">What do I need to do today?</div>
 
-    <input type="text" v-model="myTodo" />
-    <button @click="addToDo">Add</button>
-    <div :if="error !=''">{{error}}</div>
+      <input type="text" v-model="myTodo" />
+      <button @click="addToDo" class="add">Add</button>
+      <div :if="error !=''">{{error}}</div>
+    </div>
 
-    <div :if="this.$store.getters.getItems && this.$store.getters.getItems.length>0">
+    <div class="mt20" v-if="this.$store.getters.getItems && this.$store.getters.getItems.length>0">
       <div class="title">
         Tasks to be done today
       </div>
 
 
-      <div :for="item in this.$store.getters.getItems" :key="item.id">
-        <div>{{item.title}}</div>
-        <button>Delete</button>
+      <div  class='block' v-for="item in this.$store.getters.getItems" :key="item.id">
+        <div class="todo">{{item.title}}</div>
+        <button class='delete' @click="deleteItem(item.id)">Delete</button>
       </div>
     </div>
   </div>
@@ -24,7 +26,7 @@
 
 <script>
 //import HelloWorld from './components/HelloWorld.vue'
-import db from '@/main'
+import {db} from '@/main'
 
 export default {
   name: 'App',
@@ -49,7 +51,7 @@ export default {
         this.error='';
         console.log(this.myTodo);
 
-        db.collection('item').add({
+        db.collection('items').add({
           title:this.myTodo,
           createdAt : Date.now()
         })
@@ -59,13 +61,29 @@ export default {
           }
         })
         .catch(err =>{
-          this.err = err
+          this.error = err
         })
 
         
       }
       
+    },
+
+    deleteItem(id){
+      if(!id){
+        this.error = "No id found"
+      }
+      else{
+        db.collection('items').doc(id).delete().then(function(){
+          console.log("delete items");
+        })
+        .catch(function(err){
+          this.error = err
+        })
+      }
     }
+
+    
   }
 }
 </script>
@@ -76,12 +94,17 @@ export default {
 
 <style>
 html,body {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #767891;
+    background: #131421;
+}
+
+.block{
+  background: #1a1b2a;
+  padding:20px;
+  margin-top:20px;
 }
 
 .home{
@@ -89,5 +112,16 @@ html,body {
   width:300px;
   margin:auto;
 }
-input,button{padding:12px;}
+.mt20{margin-top:20px;}
+
+input{background:transparent;color:#767891;border:1px solid #767891;}
+button{background:#767891;}
+input,.add{padding:12px;margin-top:20px;}
+
+.todo{padding:10px 0;}
+
+.delete{
+  padding:5px;
+  background:#915d7c;color:#fff;border:none;border-radius:5px;
+}
 </style>
